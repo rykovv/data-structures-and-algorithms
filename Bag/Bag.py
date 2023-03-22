@@ -111,6 +111,14 @@ class LinkedListBag():
 
         return ret
 
+    def numOf(self, item):
+        itms = self.items
+        for i in self:
+            if i.item is item:
+                return i.count
+        
+        return 0
+
     def __iter__(self):
         return _LinkedListBagIterator(self.items)
 
@@ -147,6 +155,9 @@ print(lb)
 lb.add('nueces', 2)
 print(lb)
 
+lb.add('nueces', 1)
+print(lb)
+
 # iterator
 for item in lb:
     print(item)
@@ -164,3 +175,6 @@ print(lb)
 # contains
 print(lb.contains('nueces'))
 print(lb.contains('avena'))
+
+# numOf
+print(lb.numOf('nueces'))
