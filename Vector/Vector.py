@@ -19,7 +19,7 @@
 #
 ##
 
-from array import array
+import Array
 
 class Vector():
     """! Vector Class """
@@ -27,11 +27,12 @@ class Vector():
         """Creates a new empty vector with an initial capacity
             of 2 elements. 
         """
-        self._items = array('l', 2)
+        self._items = Array(2)
+        self._numItems = 0
     
     def __len__(self):
         """Returns the number of items contained in the vector"""
-        return len(self._items)
+        return self._numItems
     
     def contains(self, item):
         """Determines if the given item is contained in the vector
@@ -39,34 +40,81 @@ class Vector():
         Args:
             item (Any): item to check
         """
-        # TODO
-        pass
+        for i in self:
+            if i is item:
+                return True
+        
+        return False
 
-    def getitem(self, ndx):
+    def __getitem__(self, ndx):
         """Returns the item stored in the ndx element of the list.
         The value of ndx must be within the valid range.
 
         Args:
             ndx (int): vector index
         """
-        # TODO
-        pass
+        assert ndx >= 0 and ndx < self._numItems, "Vector index out of range."
+        assert type(ndx) is int, 'Index must be an int.'
+        return self._items[ndx]
 
-    def setitem(self, ndx, item):
-        # TODO
-        pass
+    def __setitem__(self, ndx, item):
+        """Sets the element at position ndx to contain the given item.
+        The value of ndx must be within the valid range.
+
+        Args:
+            ndx (int): vector index
+            item (Any): value to be set
+        """
+        assert ndx >= 0 and ndx < self._numItems, "Vector index out of range."
+        assert type(ndx) is int, 'Index must be an int.'
+        self._items[ndx] = item
 
     def append(self, item):
-        # TODO
-        pass
+        """Adds the given item to the end of the list. 
+
+        Args:
+            item (Any): Item to be appended
+        """
+        if self._numItems < len(self._items):
+            self._items[self._numItems] = item
+        else:
+            self._doubleSize()                        
+            self._items[self._numItems] = item
+        
+        self._numItems += 1
 
     def insert(self, ndx, item):
-        # TODO
-        pass
+        """Intesrts the given item in the element at position ndx.
+
+        Args:
+            ndx (int): Vector index
+            item (Any): Item to be assigned
+        """
+        assert ndx >= 0 and ndx < self._numItems, "Vector index out of range."
+        assert type(ndx) is int, 'Index must be an int.'
+
+        self._shiftRight(ndx)
+        self._items[ndx] = item
+        self._numItems += 1
 
     def remove(self, ndx):
-        # TODO
-        pass
+        """Removes and returns the item from the element from the given ndx position.
+
+        Args:
+            ndx (int): Item index to be removed
+
+        Returns:
+            Any: Removed item.
+        """
+        assert ndx >= 0 and ndx < self._numItems, "Vector index out of range."
+        assert type(ndx) is int, 'Index must be an int.'
+
+        retItem = self._items[ndx]
+
+        self._shift(ndx, -1)
+        self._numItems -= 1
+
+        return retItem
 
     def indexOf(self, item):
         # TODO
@@ -81,7 +129,57 @@ class Vector():
         pass
 
     def __iter__(self):
-        # TODO
-        pass
+        return _VectorIterator( self )
+    
+
+    def _doubleSize(self):
+        new_arr = Array( len(self._items)*2 )
+            
+        for i in range(self._numItems):
+            new_arr[i] = self._items[i]
+        
+        self._items = new_arr
+
+    def _shift(self, position, numElements = 1):
+        """Shifts the underlying array from position numElements elements.
+        If numElements is a positive value, it shifts the array right.
+        Shifting right it assumes the numElements is less than the doubled 
+        size of the array. When numElements is a negative value is shifts
+        the array left. It cannot shift beyonds zero index.
+        
+        Args:
+            position (int): index from which to shift right
+            elements (int): number of elements to shift
+        """
+        if numElements > 0:
+            if numElements + self._numItems < len(self._items):
+                for i in range(self._numItems - 1, self._numItems - position, -1):
+                    self._items[i + numElements] = self._items[i]
+            else:
+                self._doubleSize()
+                for i in range(self._numItems - 1, self._numItems - position, -1):
+                    self._items[i + numElements] = self._items[i]
+        else:
+            assert self._numItems - position >= abs(numElements), 'Cannot shift left beyond index 0.'
+            
+            for i in range(position, self._numItems, 1):
+                    self._items[i + numElements] = self._items[i]
+
+
+class _VectorIterator():
+    def __init__(self, vector):
+        self._vector = vector
+        self._curNdx = 0
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self._curNdx < len(self._vector):
+            item = self._vector[self._curNdx]
+            self._curNdx += 1
+            return item
+        else:
+            raise StopIteration
 
 v = Vector()
