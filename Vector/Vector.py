@@ -19,7 +19,7 @@
 #
 ##
 
-import Array
+from Array import Array
 
 class Vector():
     """! Vector Class """
@@ -93,7 +93,7 @@ class Vector():
         assert ndx >= 0 and ndx < self._numItems, "Vector index out of range."
         assert type(ndx) is int, 'Index must be an int.'
 
-        self._shiftRight(ndx)
+        self._shift(ndx)
         self._items[ndx] = item
         self._numItems += 1
 
@@ -117,16 +117,47 @@ class Vector():
         return retItem
 
     def indexOf(self, item):
-        # TODO
-        pass
+        """Returns the index of the vector element containing the given item.
+        The item must be in the list.
+
+        Args:
+            item (Any): Item to be searched for
+
+        Returns:
+            int: item's index in the Vector
+        """
+        for ndx, itm in enumerate(self):
+            if itm is item:
+                return ndx
 
     def extend(self, otherVector):
-        # TODO
-        pass
+        """Extends this vector by appending the entire contents of the otherVector
+        to this vector
+
+        Args:
+            otherVector (Vector): Vector to be appended
+        """
+        for i in otherVector:
+            self.append(i)
 
     def subVector(self, ndx_from, ndx_to):
-        # TODO
-        pass
+        """Creates and returns a new Vector that contains a subsequence of the items
+        in the vector between and including those indicated by the given ndx_from and
+        ndx_to.
+
+        Args:
+            ndx_from (int): from index
+            ndx_to (int): to index
+        """
+        assert  ndx_from < ndx_to and                               \
+                (ndx_from >= 0 and ndx_from < self._numItems) and   \
+                (ndx_to >= 0 and ndx_to < self._numItems), 'Incoherent indices.'
+        
+        subv = Vector()
+        for i in range(ndx_from, ndx_to, 1):
+            subv.append(self._items[i])
+
+        return subv
 
     def __iter__(self):
         return _VectorIterator( self )
@@ -153,18 +184,26 @@ class Vector():
         """
         if numElements > 0:
             if numElements + self._numItems < len(self._items):
-                for i in range(self._numItems - 1, self._numItems - position, -1):
+                for i in range(self._numItems - 1, position - 1, -1):
                     self._items[i + numElements] = self._items[i]
             else:
                 self._doubleSize()
-                for i in range(self._numItems - 1, self._numItems - position, -1):
+                for i in range(self._numItems - 1, position - 1, -1):
                     self._items[i + numElements] = self._items[i]
         else:
             assert self._numItems - position >= abs(numElements), 'Cannot shift left beyond index 0.'
             
-            for i in range(position, self._numItems, 1):
+            for i in range(position + 1, self._numItems, 1):
                     self._items[i + numElements] = self._items[i]
 
+    def __repr__(self):
+        ret = '['
+        for i in self:
+            ret += f'{i}, '
+        if self._numItems > 0:
+            ret = ret[:-2]
+        ret += ']'
+        return ret
 
 class _VectorIterator():
     def __init__(self, vector):
@@ -182,4 +221,71 @@ class _VectorIterator():
         else:
             raise StopIteration
 
-v = Vector()
+
+if __name__ == '__main__':
+    v = Vector()
+    print(v)
+
+    for i in range(20):
+        v.append(i)
+
+    print('append')
+    print(v)
+
+    print(f'vector length is {len(v)}')
+
+    print('contains')
+    print(v.contains(0))
+    print(v.contains(20))
+    
+    print('get, set')
+    print(v[19])
+    v[19] = 91
+    print(v[19])
+    
+    print('insert')
+    v.insert(5, 100)
+    print(v)
+    print(f'vector length is {len(v)}')
+    v.insert(0, 200)
+    print(v)
+    print(f'vector length is {len(v)}')
+    v.insert(len(v)-1, 300)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    print('remove')
+    v.remove(6)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    print('remove')
+    v.remove(0)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    print('remove')
+    v.remove(len(v)-1)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    print('remove')
+    v.remove(len(v)-1)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    print('indexOf')
+    v.indexOf(18)
+
+    print('extend')
+    v1 = Vector()
+    for i in range(19, 24, 1):
+        v1.append(i)
+
+    v.extend(v1)
+    print(v)
+    print(f'vector length is {len(v)}')
+
+    v1 = v.subVector(10, 20)
+    print(v1)
+    print(f'vector length is {len(v1)}')
