@@ -161,10 +161,33 @@ class Vector():
             subv.append(self._items[i])
 
         return subv
+    
+    def __add__(self, rhsVector):
+        assert self._numItems is rhsVector._numItems, 'Cannot sum non-equal length vectors'
+
+        for idx, itm in enumerate(rhsVector):
+            self._items[idx] += itm
+
+    def __sub__(self, rhsVector):
+        assert self._numItems is rhsVector._numItems, 'Cannot subtract non-equal length vectors'
+
+        for idx, itm in enumerate(rhsVector):
+            self._items[idx] -= itm
+
+    def __mul__(self, rhsVector):
+        assert self._numItems is rhsVector._numItems, 'Cannot multiply non-equal length vectors'
+
+        for idx, itm in enumerate(rhsVector):
+            self._items[idx] *= itm
+
+    def __div__(self, rhsVector):
+        assert self._numItems is rhsVector._numItems, 'Cannot divide non-equal length vectors'
+
+        for idx, itm in enumerate(rhsVector):
+            self._items[idx] /= itm
 
     def __iter__(self):
-        return _VectorIterator( self )
-    
+        return _VectorIterator( self )    
 
     def _increaseSizeBy(self, factor = 2):
         new_arr = Array( len(self._items)*factor )
