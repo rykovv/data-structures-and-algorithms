@@ -78,7 +78,7 @@ class Vector():
         if self._numItems < len(self._items):
             self._items[self._numItems] = item
         else:
-            self._doubleSize()                        
+            self._increaseSizeBy(2)
             self._items[self._numItems] = item
         
         self._numItems += 1
@@ -113,6 +113,9 @@ class Vector():
 
         self._shift(ndx, -1)
         self._numItems -= 1
+
+        if self._numItems <= len(self._items)/3:
+            self._decreaseSizeBy(2)
 
         return retItem
 
@@ -163,9 +166,19 @@ class Vector():
         return _VectorIterator( self )
     
 
-    def _doubleSize(self):
-        new_arr = Array( len(self._items)*2 )
+    def _increaseSizeBy(self, factor = 2):
+        new_arr = Array( len(self._items)*factor )
             
+        for i in range(self._numItems):
+            new_arr[i] = self._items[i]
+        
+        self._items = new_arr
+
+    def _decreaseSizeBy(self, factor):
+        assert self._numItems <= len(self._items)/factor, 'Cannot free still in-use memory.'
+        
+        new_arr = Array( len(self._items)/factor )
+
         for i in range(self._numItems):
             new_arr[i] = self._items[i]
         
@@ -187,7 +200,7 @@ class Vector():
                 for i in range(self._numItems - 1, position - 1, -1):
                     self._items[i + numElements] = self._items[i]
             else:
-                self._doubleSize()
+                self._increaseSizeBy(2)
                 for i in range(self._numItems - 1, position - 1, -1):
                     self._items[i + numElements] = self._items[i]
         else:
