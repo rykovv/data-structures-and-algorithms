@@ -165,8 +165,12 @@ class Vector():
     def __add__(self, rhsVector):
         assert self._numItems is rhsVector._numItems, 'Cannot sum non-equal length vectors'
 
+        newVector = Vector()
+
         for idx, itm in enumerate(rhsVector):
-            self._items[idx] += itm
+            newVector.append(self._items[idx] + itm)
+        
+        return newVector
 
     def __sub__(self, rhsVector):
         assert self._numItems is rhsVector._numItems, 'Cannot subtract non-equal length vectors'
@@ -325,3 +329,8 @@ if __name__ == '__main__':
     v1 = v.subVector(10, 20)
     print(v1)
     print(f'vector length is {len(v1)}')
+
+    print(v + v)
+    print(v - v)
+    print(v * v)
+    print(v / v)
